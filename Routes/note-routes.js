@@ -1,10 +1,21 @@
-const express = require("express")
+const express = require("express");
 const router = express.Router();
-const {addnotes,deleteNotes,updatenotes} = require("../controllers/notes-controller.js")
+const {
+  addnotes,
+  deleteNotes,
+  updatenotes,
+  getAll,
+  updateNotepin
+} = require("../controllers/notes-controller.js");
 
+const authMiddleware = require("../Utils/authMiddleware.js"); // Use require instead of import
 
-router.post('/addnotes', addnotes  );
-router.post ("/deletenotes/:id", deleteNotes);
-router.put ("/update/:id", updatenotes);
+// Protect Routes with Authentication Middleware
+router.post('/addnotes', authMiddleware, addnotes);
+router.delete("/deletenotes/:id", authMiddleware, deleteNotes);
+router.put("/update/:id", authMiddleware, updatenotes);
+router.get("/showall", authMiddleware, getAll);
+router.put("/update-pinned-notes/:id", authMiddleware, updateNotepin);
 
-module.exports = router
+module.exports = router;
+

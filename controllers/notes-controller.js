@@ -58,7 +58,7 @@ const updatenotes = async (req,res) => {
 
     const update = await Note.findByIdAndUpdate(
       id,
-      {title, conten,tags},
+      {title, content,tags},
       {new: true, runValidator:true}
     );
 
@@ -70,5 +70,46 @@ const updatenotes = async (req,res) => {
   }
 }
 
+const getAll  = async (req,res) => {
+  try{
+    const notes = await Note.find();
+    res.status(200).json(notes);
 
-module.exports = {addnotes, deleteNotes,updatenotes};
+
+  }catch(error){
+    console.error("Error fetching notes:", error.message);
+    res.status(500).json({ message: "Error fetching notes" });
+
+  }
+
+};
+
+const updateNotepin = async (req, res) => {
+  try {
+    const { noteId, isPinned } = req.body; // Ensure noteId and isPinned are provided
+
+    if (!noteId) {
+      return res.status(400).json({ message: "Note ID is required" });
+    }
+
+    // Find and update the note's pinned status
+    const updatedNote = await Note.findByIdAndUpdate(
+      noteId,
+      { isPinned },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedNote) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+
+    return res.status(200).json({ message: "Note pin status updated successfully", updatedNote });
+
+  } catch (error) {
+    console.error("Error:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+module.exports = {addnotes, deleteNotes,updatenotes,getAll,updateNotepin };
